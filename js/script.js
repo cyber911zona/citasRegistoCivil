@@ -139,14 +139,6 @@ function initializeCalendar() {
     });
 
     calendar.render();
-
-    // Cambiar la vista automáticamente si se cambia el tamaño de pantalla
-    window.addEventListener('resize', () => {
-        const newView = window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth';
-        if (calendar.view.type !== newView) {
-            calendar.changeView(newView);
-        }
-    });
 }
 
     initializeCalendar();
@@ -564,3 +556,4 @@ chatInput.addEventListener('keypress', (e) => {
         saveAppointments
     };
 });
+
