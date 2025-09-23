@@ -459,6 +459,18 @@ function initializeCalendar() {
         addInitialMessage();
     }, 1500);
 
+    // se ajusta el chatbot al tamaño de la ventana 
+    function ajustarChatPorPantalla() {
+        if (window.innerWidth < 768) {
+            chatWindow.classList.add('hidden');
+        } else {
+            chatWindow.classList.remove('hidden');
+        }
+    }
+    ajustarChatPorPantalla();
+    window.addEventListener('resize', ajustarChatPorPantalla);
+
+
     function addInitialMessage() {
         const initialText = "Hola 👋 ¿En qué puedo ayudarte? Puedes preguntar por 'acta', 'matrimonio', etc.";
         addMessage(initialText, "bot");
@@ -542,5 +554,6 @@ function initializeCalendar() {
         saveAppointments
     };
 });
+
 
 
