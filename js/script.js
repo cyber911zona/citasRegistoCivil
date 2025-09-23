@@ -79,61 +79,72 @@ function initializeCalendar() {
 
     // Configuración
     calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'timeGridWeek',
-    headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-    },
-    locale: 'es',
-    slotMinTime: '09:00:00',
-    slotMaxTime: '15:30:00',
-    slotDuration: '00:30:00',
-    firstDay: 1,
-    nowIndicator: true,
-    allDaySlot: false,
-    events: getCalendarEvents(),
+        initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth', // vista inicial según pantalla
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,listWeek' // permite cambiar vista
+        },
+        locale: 'es',
+        slotMinTime: '09:00:00',
+        slotMaxTime: '15:30:00',
+        slotDuration: '00:30:00',
+        firstDay: 1,
+        nowIndicator: true,
+        allDaySlot: false,
+        events: getCalendarEvents(),
 
-    dateClick: function(info) {
-        const clickedDate = new Date(info.dateStr);
-        const today = new Date();
-        today.setHours(0,0,0,0);
+        dateClick: function(info) {
+            const clickedDate = new Date(info.dateStr);
+            const today = new Date();
+            today.setHours(0,0,0,0);
 
-        if (clickedDate < today) {
-            alert("⛔ No se pueden agendar citas en días pasados.");
-            return;
-        }
+            if (clickedDate < today) {
+                alert("⛔ No se pueden agendar citas en días pasados.");
+                return;
+            }
 
-        modalFechaInput.value = formatDateForInput(clickedDate);
-        openModalForNew();
-    },
-    eventClick: function(info) {
-        const ev = info.event;
-        const id = ev.id;
-        const appointment = scheduledAppointments.find(a => a.id === id);
-        if (appointment) {
-            openModalForExisting(appointment);
-        } else {
-            alert('Evento no encontrado.');
-        }
-    },
-    slotLabelFormat: {
-        hour: 'numeric',
-        minute: '2-digit',
-        omitZeroMinute: false,
-        meridiem: 'short'
-    },
-    slotEventOverlap: false,
-    dayCellDidMount: function(info) {
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        if (info.date < today) {
-            info.el.classList.add("pasado");
-        }
-    },
-});
+            modalFechaInput.value = formatDateForInput(clickedDate);
+            openModalForNew();
+        },
+
+        eventClick: function(info) {
+            const ev = info.event;
+            const id = ev.id;
+            const appointment = scheduledAppointments.find(a => a.id === id);
+            if (appointment) {
+                openModalForExisting(appointment);
+            } else {
+                alert('Evento no encontrado.');
+            }
+        },
+
+        slotLabelFormat: {
+            hour: 'numeric',
+            minute: '2-digit',
+            omitZeroMinute: false,
+            meridiem: 'short'
+        },
+        slotEventOverlap: false,
+
+        dayCellDidMount: function(info) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            if (info.date < today) {
+                info.el.classList.add("pasado"); // aplica estilo a días pasados
+            }
+        },
+    });
 
     calendar.render();
+
+    // Cambiar la vista automáticamente si se cambia el tamaño de pantalla
+    window.addEventListener('resize', () => {
+        const newView = window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth';
+        if (calendar.view.type !== newView) {
+            calendar.changeView(newView);
+        }
+    });
 }
 
     initializeCalendar();
