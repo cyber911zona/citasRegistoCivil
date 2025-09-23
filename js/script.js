@@ -526,9 +526,10 @@ function initializeCalendar() {
 
     // Carga inicial de citas desde localStorage al calendar
     function refreshCalendarEvents() {
-        // primero borrar eventos actuales y volver a crear
+        if (!calendar) return; // evitar errores
         calendar.getEvents().forEach(ev => ev.remove());
         getCalendarEvents().forEach(e => calendar.addEvent(e));
+        calendar.updateSize(); // recalcula tamaño para que se vea inmediatamente
     }
 
     // Se asegura de sincronizar visualización con datos guardados
@@ -541,4 +542,5 @@ function initializeCalendar() {
         saveAppointments
     };
 });
+
 
