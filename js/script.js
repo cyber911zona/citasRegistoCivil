@@ -77,13 +77,15 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeCalendar() {
     const calendarEl = document.getElementById('calendar');
 
-    // Configuración
+    // Determinar vista inicial según pantalla
+    const defaultView = 'dayGridMonth';
+
     calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth', // vista inicial según pantalla
+        initialView: defaultView,
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,listWeek' // permite cambiar vista
+            right: 'dayGridMonth,timeGridWeek,listWeek'
         },
         locale: 'es',
         slotMinTime: '09:00:00',
@@ -131,7 +133,7 @@ function initializeCalendar() {
             const today = new Date();
             today.setHours(0,0,0,0);
             if (info.date < today) {
-                info.el.classList.add("pasado"); // aplica estilo a días pasados
+                info.el.classList.add("pasado");
             }
         },
     });
@@ -460,37 +462,44 @@ function initializeCalendar() {
     }, 1500);
 
     // se ajusta el chatbot al tamaño de la ventana 
-    function ajustarChatPorPantalla() {
-        if (window.innerWidth < 768) {
-            chatWindow.classList.add('hidden');
-        } else {
-            chatWindow.classList.remove('hidden');
+    // CHATBOT (básico)
+
+// Ajusta el chatbot según el tamaño de pantalla
+function ajustarChatPorPantalla() {
+    if (window.innerWidth < 768) {
+        chatWindow.classList.add('hidden'); // móvil: minimizado
+    } else {
+        chatWindow.classList.remove('hidden'); // PC: visible
+    }
+}
+ajustarChatPorPantalla();
+window.addEventListener('resize', ajustarChatPorPantalla);
+
+// Mensaje inicial (sin abrir ventana en móvil)
+function addInitialMessage() {
+    const initialText = "Hola 👋 ¿En qué puedo ayudarte? Puedes preguntar por 'acta', 'matrimonio', etc.";
+    addMessage(initialText, "bot");
+}
+addInitialMessage(); // se agrega mensaje inicial
+
+// Toggle chatbot
+chatToggle.addEventListener('click', () => {
+    chatWindow.classList.toggle('hidden');
+    if (!chatWindow.classList.contains('hidden')) chatInput.focus();
+});
+
+// Enviar mensaje con Enter
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === "Enter") {
+        const userMsg = chatInput.value.trim();
+        if (userMsg !== "") {
+            addMessage(userMsg, "user");
+            responderBot(userMsg);
+            chatInput.value = "";
         }
     }
-    ajustarChatPorPantalla();
-    window.addEventListener('resize', ajustarChatPorPantalla);
+});
 
-
-    function addInitialMessage() {
-        const initialText = "Hola 👋 ¿En qué puedo ayudarte? Puedes preguntar por 'acta', 'matrimonio', etc.";
-        addMessage(initialText, "bot");
-    }
-
-    chatToggle.addEventListener('click', () => {
-        chatWindow.classList.toggle('hidden');
-        if (!chatWindow.classList.contains('hidden')) chatInput.focus();
-    });
-
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === "Enter") {
-            const userMsg = chatInput.value.trim();
-            if (userMsg !== "") {
-                addMessage(userMsg, "user");
-                responderBot(userMsg);
-                chatInput.value = "";
-            }
-        }
-    });
 
     function addMessage(text, sender) {
         const messageContainer = document.createElement("div");
@@ -538,11 +547,12 @@ function initializeCalendar() {
 
     // Carga inicial de citas desde localStorage al calendar
     function refreshCalendarEvents() {
-        if (!calendar) return; // evitar errores
-        calendar.getEvents().forEach(ev => ev.remove());
-        getCalendarEvents().forEach(e => calendar.addEvent(e));
-        calendar.updateSize(); // recalcula tamaño para que se vea inmediatamente
+    if (!calendar) return; // evitar errores
+    calendar.getEvents().forEach(ev => ev.remove());
+    getCalendarEvents().forEach(e => calendar.addEvent(e));
+    calendar.updateSize(); // recalcula tamaño para que se vea inmediatamente
     }
+
 
     // Se asegura de sincronizar visualización con datos guardados
     refreshCalendarEvents();
@@ -554,6 +564,3 @@ function initializeCalendar() {
         saveAppointments
     };
 });
-
-
-
