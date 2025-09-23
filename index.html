@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sistema de Citas - Registro Civil Nogales</title>
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- FullCalendar (v5) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/plugins/interaction/main.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">Registro Civil</div>
+        <nav>
+            <ul>
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#tramites">Trámites</a></li>
+                <li><a href="#horarios">Horarios</a></li>
+                <li><a href="#cita">Agendar cita</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        <section id="inicio" class="hero" aria-label="Portada">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1>Haz tus trámites más fáciles y rápidos</h1>
+                <p>Ahorra tiempo y evita traslados</p>
+                <a href="#cita" class="btn">Agendar cita</a>
+            </div>
+        </section>
+
+        <section id="tramites" class="section">
+            <h2>Trámites disponibles</h2>
+            <p style="text-align: center; margin-bottom: 30px;">Haz clic en un trámite para ver los detalles y requisitos.</p>
+            <div class="cards">
+                <a href="#" class="card tramite" data-tramite="nacimiento">
+                    <img src="img/nacimiento.png" alt="Acta de nacimiento" class="icono">
+                    <h3>Registro de Nacimiento</h3>
+                    <p>Registra a un nuevo ciudadano.</p>
+                </a>
+                <a href="#" class="card tramite" data-tramite="matrimonio">
+                    <img src="img/matrimonio.png" alt="Matrimonio" class="icono">
+                    <h3>Matrimonio Civil</h3>
+                    <p>Formaliza legalmente la unión.</p>
+                </a>
+                <a href="#" class="card tramite" data-tramite="defuncion">
+                    <img src="img/defuncion.png" alt="Defunción" class="icono">
+                    <h3>Acta de Defunción</h3>
+                    <p>Trámite para registrar el fallecimiento.</p>
+                </a>
+                <a href="#" class="card tramite" data-tramite="otros">
+                    <img src="img/otros.png" alt="Otros trámites" class="icono">
+                    <h3>Copias Certificadas</h3>
+                    <p>Solicita copias oficiales de actas.</p>
+                </a>
+            </div>
+        </section>
+
+        <section id="horarios" class="section">
+            <h2>Horarios de atención</h2>
+            <div class="card horario">
+                <p><strong>Lunes a Viernes:</strong> 9:00 AM - 3:00 PM</p>
+                <p><strong>Sábados:</strong> 9:00 AM - 1:00 PM</p>
+                <p><strong>Domingos y festivos:</strong> Cerrado</p>
+            </div>
+        </section>
+
+        <section id="cita" class="section">
+            <h2>Agendar una cita</h2>
+            <div id="calendar" style="max-width: 900px; margin: auto;"></div>
+
+            <!-- Modal para crear/ver/editar cita -->
+            <div id="modal-form" class="hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                <div class="modal-content" id="modalContent">
+                    <span class="close-button" id="closeModal" title="Cerrar">&times;</span>
+                    <h3 id="modalTitle">Agendar cita</h3>
+                    <form id="formCita" class="formulario" autocomplete="off">
+                        <label for="modalNombre">Nombre completo:</label>
+                        <input type="text" id="modalNombre" required placeholder="Nombre completo">
+
+                        <label for="modalCurp">CURP:</label>
+                        <input type="text" id="modalCurp" required placeholder="XXXXXXXXXXXXXX" maxlength="18">
+
+                        <label for="modalTramite">Trámite:</label>
+                        <select id="modalTramite" required>
+                            <option value="">-- Seleccione --</option>
+                            <option value="Registro de Nacimiento">Registro de Nacimiento</option>
+                            <option value="Matrimonio Civil">Matrimonio Civil</option>
+                            <option value="Acta de Defunción">Acta de Defunción</option>
+                            <option value="Copia Certificada">Copia Certificada</option>
+                        </select>
+
+                        <label for="modalFecha">Fecha y hora seleccionada:</label>
+                        <input type="text" id="modalFecha" readonly>
+
+                        <div style="display:flex; gap:12px;">
+                            <button type="submit" id="confirmButton">Confirmar y Descargar Cita</button>
+                            <button type="button" id="deleteButton" class="btn-back hidden">Eliminar cita</button>
+                        </div>
+                    </form>
+                    <div id="mensaje-modal" class="mensaje" role="status" aria-live="polite"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="details-content" class="hidden" aria-live="polite">
+        <section id="detalle-nacimiento" class="section detalle-tramite hidden">
+            <h2>Requisitos para Registro de Nacimiento</h2>
+            <ul>
+                <li>Certificado de Nacimiento original (expedido por el hospital).</li>
+                <li>Acta de Nacimiento de los padres.</li>
+                <li>Identificación oficial vigente de los padres (INE, Pasaporte).</li>
+                <li>Acta de Matrimonio (si aplica).</li>
+                <li>Dos testigos mayores de edad con identificación oficial.</li>
+            </ul>
+            <button class="btn-pdf" data-tramite="nacimiento">Descargar Requisitos en PDF</button>
+            <button class="btn-back">Volver a Trámites</button>
+        </section>
+
+        <section id="detalle-matrimonio" class="section detalle-tramite hidden">
+            <h2>Requisitos para Matrimonio Civil</h2>
+            <ul>
+                <li>Solicitud de matrimonio debidamente llenada.</li>
+                <li>Acta de nacimiento reciente de ambos contrayentes.</li>
+                <li>Identificación oficial vigente de ambos.</li>
+                <li>CURP de ambos contrayentes.</li>
+                <li>Análisis clínicos prenupciales (con vigencia no mayor a 15 días).</li>
+                <li>Constancia de soltería (si aplica).</li>
+                <li>Dos testigos por cada contrayente con identificación oficial.</li>
+            </ul>
+            <button class="btn-pdf" data-tramite="matrimonio">Descargar Requisitos en PDF</button>
+            <button class="btn-back">Volver a Trámites</button>
+        </section>
+
+        <section id="detalle-defuncion" class="section detalle-tramite hidden">
+            <h2>Requisitos para Acta de Defunción</h2>
+            <ul>
+                <li>Certificado Médico de Defunción en formato original.</li>
+                <li>Identificación oficial del fallecido.</li>
+                <li>Acta de nacimiento del fallecido.</li>
+                <li>Identificación oficial del declarante (familiar o responsable).</li>
+                <li>CURP del fallecido.</li>
+            </ul>
+            <button class="btn-pdf" data-tramite="defuncion">Descargar Requisitos en PDF</button>
+            <button class="btn-back">Volver a Trámites</button>
+        </section>
+
+        <section id="detalle-otros" class="section detalle-tramite hidden">
+            <h2>Requisitos para Copias Certificadas</h2>
+            <ul>
+                <li>Nombre completo de la persona registrada en el acta.</li>
+                <li>Fecha exacta de nacimiento, matrimonio, etc.</li>
+                <li>Lugar de registro (municipio, estado).</li>
+                <li>CURP (si se tiene).</li>
+                <li>Identificación oficial del solicitante.</li>
+                <li>Comprobante de pago de derechos.</li>
+            </ul>
+            <button class="btn-pdf" data-tramite="otros">Descargar Requisitos en PDF</button>
+            <button class="btn-back">Volver a Trámites</button>
+        </section>
+    </div>
+
+    <div id="chatbot">
+        <div id="chat-window" class="hidden"> 
+            <div id="chat-header">Asistente Virtual</div>
+            <div id="chat-body"></div>
+            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." aria-label="Escribe tu mensaje">
+        </div>
+        <button id="chat-toggle">💬</button>
+    </div>
+
+    <footer>
+        <p>Registro Civil Nogales, Veracruz © 2025 | Todos los derechos reservados</p>
+    </footer>
+
+    <!-- Script principal -->
+    <script src="js/script.js"></script>
+</body>
+</html>

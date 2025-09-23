@@ -1,0 +1,446 @@
+/* ===== ESTILOS GENERALES ===== */
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: #f4f6f9;
+    color: #333;
+    -webkit-font-smoothing:antialiased;
+}
+
+/* ===== HEADER ===== */
+header {
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header .logo {
+    font-weight: bold;
+    font-size: 22px;
+}
+
+header nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+header nav a:hover {
+    color: #f1c40f;
+}
+
+/* ===== HERO (FULL-WIDTH) ===== */
+.hero {
+    position: relative;
+    text-align: center;
+    padding: 120px 20px;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    transition: background-image 1.5s ease-in-out;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.hero .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.hero .hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero h1 {
+    font-size: 42px;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    font-size: 20px;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: white;
+    color: #27ae60;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.btn:hover {
+    background: #ecf0f1;
+    transform: scale(1.05);
+}
+
+/* ===== SECCIONES ===== */
+.section {
+    padding: 60px 20px;
+    max-width: 1100px;
+    margin: auto;
+    border-radius: 15px;
+    margin-bottom: 40px; 
+    background: #ffffff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* CLASE PARA OCULTAR Y MOSTRAR CONTENIDO */
+.hidden {
+    display: none !important;
+}
+
+/* ===== CARDS ===== */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background: white;
+    padding: 25px 20px;
+    border-radius: 15px;
+    box-shadow: 0px 6px 15px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0,0,0,0.15);
+}
+
+.card.tramite {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.card h3 {
+    margin: 15px 0 10px;
+    color: #2c3e50;
+}
+
+.tramite { border-top: 5px solid #2980b9; }
+.horario { border-top: 5px solid #27ae60; }
+
+.icono {
+    width: 60px;
+    margin-bottom: 10px;
+}
+
+/* ===== FORMULARIO ===== */
+.formulario {
+    max-width: 550px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: #f9f9f9;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+input, select, button[type="submit"], button {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+button[type="submit"] {
+    background: #27ae60;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+}
+
+button[type="submit"]:hover {
+    background: #219150;
+    transform: scale(1.02);
+}
+
+.mensaje {
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 8px;
+    display: none;
+    font-weight: bold;
+    text-align: center;
+}
+
+.exito { background: #d4edda; color: #155724; display:block; }
+.error { background: #f8d7da; color: #721c24; display:block; }
+
+/* ===== SECCIONES DE DETALLE DE TRÁMITES ===== */
+.detalle-tramite {
+    background-color: #fdfdfd;
+    border-left: 8px solid #2980b9;
+}
+
+.detalle-tramite h2 {
+    color: #2c3e50;
+    border-bottom: 2px solid #f1c40f;
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+}
+
+.detalle-tramite ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.detalle-tramite ul li {
+    background: #f4f6f9;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    position: relative;
+    padding-left: 35px;
+}
+
+.detalle-tramite ul li::before {
+    content: '✔';
+    color: #27ae60;
+    font-weight: bold;
+    position: absolute;
+    left: 12px;
+    top: 15px;
+}
+
+.detalle-tramite button {
+    margin-top: 20px;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    font-size: 15px;
+    margin-right: 15px;
+}
+
+.btn-pdf {
+    background: #e74c3c;
+    color: white;
+}
+.btn-pdf:hover {
+    background: #c0392b;
+    transform: scale(1.05);
+}
+
+.btn-back {
+    background: #34495e;
+    color: white;
+}
+.btn-back:hover {
+    background: #2c3e50;
+    transform: scale(1.05);
+}
+
+/* ===== ESTILOS PARA FULLCALENDAR ===== */
+.fc-daygrid-event, .fc-timegrid-event {
+    border-radius: 5px;
+    padding: 2px 5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* ===== FULLCALENDAR: DÍAS PASADOS ===== */
+.pasado {
+    background-color: #f0f0f0;
+    color: #999;
+}
+
+
+/* ===== CHATBOT ===== */
+#chatbot {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+}
+
+#chat-window {
+    width: 320px;
+    height: 420px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0px 6px 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+#chat-header {
+    background: #2c3e50;
+    color: white;
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#chat-body {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.user-message, .bot-message {
+    padding: 0;
+    margin: 0;
+    max-width: 85%;
+}
+
+.user-message p, .bot-message p {
+    padding: 10px 15px;
+    border-radius: 18px;
+    margin: 0;
+    word-wrap: break-word;
+}
+
+.user-message {
+    align-self: flex-end;
+}
+.user-message p {
+    background: #2980b9;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.bot-message {
+    align-self: flex-start;
+}
+.bot-message p {
+    background: #ecf0f1;
+    color: #333;
+    border-bottom-left-radius: 4px;
+}
+
+.animated-message {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+#chat-input {
+    border: none;
+    padding: 12px;
+    border-top: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#chat-toggle {
+    background: #27ae60;
+    color: white;
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+}
+
+#chat-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* ===== FOOTER ===== */
+footer {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+}
+
+/* Modal */
+#modal-form {
+    position: fixed;
+    z-index: 1002;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    animation: fadeIn 0.5s;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    text-align: center;
+}
+
+.close-button {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #333;
+    text-decoration: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
