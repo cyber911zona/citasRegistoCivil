@@ -79,7 +79,7 @@ function initializeCalendar() {
 
     // Configuración
     calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth', // vista inicial según pantalla
+        initialView: 'dayGridMonth', // vista inicial según pantalla
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
@@ -541,3 +541,4 @@ function initializeCalendar() {
         saveAppointments
     };
 });
+
