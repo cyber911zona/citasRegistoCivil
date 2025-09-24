@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalCurpInput = document.getElementById('modalCurp');
     const modalTramiteSelect = document.getElementById('modalTramite');
     const modalFechaInput = document.getElementById('modalFecha');
+    const modalHoraInput = document.getElementById('modalHora');
     const mensajeModal = document.getElementById('mensaje-modal');
     const confirmButton = document.getElementById('confirmButton');
     const deleteButton = document.getElementById('deleteButton');
@@ -106,7 +107,7 @@ function initializeCalendar() {
                 return;
             }
 
-            modalFechaInput.value = formatDateForInput(clickedDate);
+            modalFechaInput.value = clickedDate.toISOString().split('T')[0]; // 'YYYY-MM-DD'
             openModalForNew();
         },
 
@@ -139,35 +140,99 @@ function initializeCalendar() {
     });
 
     calendar.render();
+
 }
 
     initializeCalendar();
 
+    // Eliminas las horas seleccionadas que ya están como cita
+function actualizarHorasDisponibles(fecha) {
+    const horasDisponibles = [];
+    const inicio = 9;  // 9 AM
+    const fin = 15;    // hasta 15:30 máximo
+    const intervalo = 30; // minutos
+
+    for (let h = inicio; h <= fin; h++) {
+        for (let m = 0; m < 60; m += intervalo) {
+            if (h === fin && m > 30) continue; // evitar 15:30+
+
+            const hh = h.toString().padStart(2, '0');
+            const mm = m.toString().padStart(2, '0');
+            const fechaHora = `${fecha}T${hh}:${mm}`; // formato ISO-like
+
+            // Verifica si la hora ya está ocupada, excluyendo la cita que estamos editando
+            if (!isSlotTaken(fechaHora, currentEditingId)) {
+                horasDisponibles.push(`${hh}:${mm}`);
+            }
+        }
+    }
+
+    // Limpiar opciones actuales y agregar las nuevas
+    modalHoraInput.innerHTML = '';
+    if (horasDisponibles.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'No hay horarios disponibles';
+        modalHoraInput.appendChild(opt);
+    } else {
+        horasDisponibles.forEach(hora => {
+            const opt = document.createElement('option');
+            opt.value = hora;
+            opt.textContent = hora;
+            modalHoraInput.appendChild(opt);
+        });
+    }
+}
+
+
     // Abrir modal para una nueva cita
     function openModalForNew() {
-        currentEditingId = null;
-        modalForm.classList.remove('hidden');
-        modalNombreInput.value = '';
-        modalCurpInput.value = '';
-        modalTramiteSelect.value = '';
-        confirmButton.textContent = 'Confirmar y Descargar Cita';
-        deleteButton.classList.add('hidden');
-        mensajeModal.style.display = 'none';
-        modalNombreInput.focus();
+    currentEditingId = null;
+    modalForm.classList.remove('hidden');
+    modalNombreInput.value = '';
+    modalCurpInput.value = '';
+    modalTramiteSelect.value = '';
+    confirmButton.textContent = 'Confirmar y Descargar Cita';
+    deleteButton.classList.add('hidden');
+    mensajeModal.style.display = 'none';
+
+    // NUEVO: actualizar horas disponibles según fecha seleccionada
+    if (modalFechaInput.value) {
+        actualizarHorasDisponibles(modalFechaInput.value);
     }
+
+    modalNombreInput.focus();
+}
+
 
     // Abrir modal para cita existente (ver / eliminar)
     function openModalForExisting(app) {
-        currentEditingId = app.id;
-        modalForm.classList.remove('hidden');
-        modalNombreInput.value = app.nombre;
-        modalCurpInput.value = app.curp;
-        modalTramiteSelect.value = app.tramite;
-        modalFechaInput.value = app.datetime;
-        confirmButton.textContent = 'Guardar cambios y Descargar Cita';
-        deleteButton.classList.remove('hidden');
-        mensajeModal.style.display = 'none';
-    }
+    currentEditingId = app.id;
+    modalForm.classList.remove('hidden');
+    modalNombreInput.value = app.nombre;
+    modalCurpInput.value = app.curp;
+    modalTramiteSelect.value = app.tramite;
+
+    const dt = new Date(app.datetime);
+    modalFechaInput.value = dt.toISOString().split('T')[0]; // solo YYYY-MM-DD
+
+    // NUEVO: actualizar horas disponibles según fecha
+    actualizarHorasDisponibles(modalFechaInput.value);
+
+    // seleccionar hora actual
+    modalHoraInput.value = dt.getHours().toString().padStart(2,'0') + ':' + dt.getMinutes().toString().padStart(2,'0');
+
+    confirmButton.textContent = 'Guardar cambios y Descargar Cita';
+    deleteButton.classList.remove('hidden');
+    mensajeModal.style.display = 'none';
+}
+
+// -----------------------
+// NUEVO: Listener al cambiar la fecha
+// -----------------------
+modalFechaInput.addEventListener('change', function() {
+    actualizarHorasDisponibles(this.value);
+});
 
     // Cerrar modal
     function closeModal() {
@@ -200,7 +265,12 @@ function initializeCalendar() {
         const nombre = modalNombreInput.value.trim();
         const curp = modalCurpInput.value.trim().toUpperCase();
         const tramite = modalTramiteSelect.value;
-        const fechaCompleta = modalFechaInput.value.trim(); // 'YYYY-MM-DD HH:MM'
+        const fecha = modalFechaInput.value; // solo YYYY-MM-DD
+        const hora = modalHoraInput.value; // 'HH:MM'
+        const fechaCompleta = fecha + "T" + hora; // ISO 8601 para FullCalendar
+
+
+
 
         if (!nombre || !curp || !tramite || !fechaCompleta) {
             showMessageModal('Por favor completa todos los campos.', 'error');
@@ -238,7 +308,7 @@ function initializeCalendar() {
                 showMessageModal('✅ Cita actualizada. Descargando comprobante...', 'exito');
                 // descargar PDF con nueva info
                 setTimeout(() => {
-                    const { fecha, hora } = splitFechaHoraFromInput(fechaCompleta);
+                    
                     generarPdfCita(nombre, curp, tramite, fecha, hora);
                     closeModal();
                 }, 900);
@@ -268,7 +338,7 @@ function initializeCalendar() {
             saveAppointments();
             showMessageModal('✅ Cita registrada. Descargando tu comprobante...', 'exito');
             setTimeout(() => {
-                const { fecha, hora } = splitFechaHoraFromInput(fechaCompleta);
+                
                 generarPdfCita(nombre, curp, tramite, fecha, hora);
                 formCita.reset();
                 closeModal();
@@ -556,4 +626,3 @@ chatInput.addEventListener('keypress', (e) => {
         saveAppointments
     };
 });
-
