@@ -92,7 +92,7 @@ function initializeCalendar() {
         slotMinTime: '09:00:00',
         slotMaxTime: '15:30:00',
         slotDuration: '00:30:00',
-        firstDay: 1,
+        firstDay: 0,
         nowIndicator: true,
         allDaySlot: false,
         events: getCalendarEvents(),
@@ -626,3 +626,4 @@ chatInput.addEventListener('keypress', (e) => {
         saveAppointments
     };
 });
+
